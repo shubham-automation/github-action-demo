@@ -73,21 +73,21 @@ jobs:
           kubectl apply -f k8s/service.yaml
           kubectl rollout status deployment/eks-app
 
-      # - name: Deploy New Feature of the Application
-      # if: ${{ github.event.inputs.operation == 'deploy_new_feature' }}
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      #   run: |
-      #     mkdir -p ~/.kube
-      #     echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
-      #     sed -i "s|<ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
-      #     # Enable feature toggle for Customer B (set to true for new feature)
-      #     sed -i 's/value: "false"/value: "true"/g' k8s/deployment.yaml
-      #     kubectl apply -f k8s/deployment.yaml
-      #     kubectl apply -f k8s/service.yaml
-      #     kubectl rollout status deployment/eks-app
+      - name: Deploy New Feature of the Application
+      if: ${{ github.event.inputs.operation == 'deploy_new_feature' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        run: |
+          mkdir -p ~/.kube
+          echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
+          sed -i "s|<ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
+          # Enable feature toggle for Customer B (set to true for new feature)
+          sed -i 's/value: "false"/value: "true"/g' k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl rollout status deployment/eks-app
 
       # - name: Store Image Tag for Rollback
       #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
