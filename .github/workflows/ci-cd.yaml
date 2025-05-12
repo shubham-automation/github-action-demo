@@ -53,11 +53,11 @@ jobs:
             echo $IMAGE_TAG >> previous_image_tag.txt
           fi
 
-      # - name: Debug Image Tag File
-      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
-      #   run: |
-      #     echo "Contents of previous_image_tag.txt:"
-      #     cat previous_image_tag.txt || echo "File not found"
+      - name: Debug Image Tag File
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
+        run: |
+          echo "Contents of previous_image_tag.txt:"
+          cat previous_image_tag.txt || echo "File not found"
 
       # - name: Deploy Default Feature of the Application
       #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
