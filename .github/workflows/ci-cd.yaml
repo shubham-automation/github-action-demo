@@ -101,7 +101,7 @@ jobs:
         if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
         uses: dawidd6/action-download-artifact@v6
         with:
-          workflow: deploy_default_feature.yaml
+          workflow: ci-cd.yaml
           name: image-tags
           path: downloaded-artifact
 
