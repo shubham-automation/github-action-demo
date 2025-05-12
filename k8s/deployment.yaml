@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: eks-app
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: eks-app
+  template:
+    metadata:
+      labels:
+        app: eks-app
+    spec:
+      containers:
+      - name: eks-app
+        image: <ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>
+        ports:
+        - containerPort: 3000
+        env:
+        - name: ENABLE_CUSTOMER_B_FEATURE
+          value: "false" # Default: feature off

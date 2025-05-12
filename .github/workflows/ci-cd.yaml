@@ -1,0 +1,142 @@
+name: Deploy Application for Customers
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Select the operation'
+        required: true
+        type: choice
+        options:
+          - deploy_default_feature
+          - rollback_to_default_feature
+          - deploy_new_feature
+permissions: # permission to upload artifacts
+  actions: write
+  contents: read
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'rollback_to_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'rollback_to_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # - name: Login to Amazon ECR
+      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'rollback_to_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+      #   id: login-ecr
+      #   uses: aws-actions/amazon-ecr-login@v2
+
+      # - name: Set Image Tag
+      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+      #   id: set-image-tag
+      #   run: echo "IMAGE_TAG=$(echo $RANDOM)" >> $GITHUB_ENV
+
+      # - name: Build, Tag, and Push Image to Amazon ECR
+      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      #   run: |
+      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      #     # Create or update previous_image_tag.txt
+      #     #echo "PREVIOUS_IMAGE_TAG=$(cat previous_image_tag.txt 2>/dev/null || echo 'latest')" > previous_image_tag.txt
+      #     if [ "${{ github.event.inputs.operation }}" == "deploy_default_feature" ]; then
+      #       echo $IMAGE_TAG >> previous_image_tag.txt
+      #     fi
+
+      # - name: Debug Image Tag File
+      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
+      #   run: |
+      #     echo "Contents of previous_image_tag.txt:"
+      #     cat previous_image_tag.txt || echo "File not found"
+
+      # - name: Deploy Default Feature of the Application
+      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      #   run: |
+      #     mkdir -p ~/.kube
+      #     echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
+      #     sed -i "s|<ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
+      #     kubectl apply -f k8s/deployment.yaml
+      #     kubectl apply -f k8s/service.yaml
+      #     kubectl rollout status deployment/eks-app
+
+      # - name: Deploy New Feature of the Application
+      # if: ${{ github.event.inputs.operation == 'deploy_new_feature' }}
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      #   run: |
+      #     mkdir -p ~/.kube
+      #     echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
+      #     sed -i "s|<ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>|$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
+      #     # Enable feature toggle for Customer B (set to true for new feature)
+      #     sed -i 's/value: "false"/value: "true"/g' k8s/deployment.yaml
+      #     kubectl apply -f k8s/deployment.yaml
+      #     kubectl apply -f k8s/service.yaml
+      #     kubectl rollout status deployment/eks-app
+
+      # - name: Store Image Tag for Rollback
+      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: image-tags
+      #     path: previous_image_tag.txt
+      #     retention-days: 7
+
+      # - name: 'Download artifact from latest build'
+      #   if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
+      #   uses: dawidd6/action-download-artifact@v6
+      #   with:
+      #     workflow: deploy_default_feature.yaml
+      #     name: image-tags
+      #     path: downloaded-artifact
+
+      # - name: Verify Artifact Download
+      #   if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
+      #   run: |
+      #     if [ -f "downloaded-artifact/previous_image_tag.txt" ]; then
+      #       echo "Artifact downloaded successfully. Contents:"
+      #       cat downloaded-artifact/previous_image_tag.txt
+      #     else
+      #       echo "Error: Artifact 'image-tags' not found or download failed"
+      #       echo "Possible causes:"
+      #       echo "- Deploy workflow failed to upload artifact"
+      #       echo "- Artifact expired (retention period: 7 days)"
+      #       echo "- Incompatible artifact version"
+      #       exit 1
+      #     fi
+
+      # - name: Rollback to Previous/Default Feature
+      #   if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+      #   run: |
+      #     PREVIOUS_IMAGE_TAG=$(head -n 1 downloaded-artifact/previous_image_tag.txt)
+      #     if [ -z "$PREVIOUS_IMAGE_TAG" ]; then
+      #       echo "Error: No previous image tag found in previous_image_tag.txt"
+      #       exit 1
+      #     fi
+      #     mkdir -p ~/.kube
+      #     echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
+      #     sed -i "s|<ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>|$ECR_REGISTRY/$ECR_REPOSITORY:$PREVIOUS_IMAGE_TAG|g" k8s/deployment.yaml
+      #     # Disable feature toggle for rollback
+      #     sed -i 's/value: "true"/value: "false"/g' k8s/deployment.yaml
+      #     kubectl apply -f k8s/deployment.yaml
+      #     kubectl apply -f k8s/service.yaml
+      #     kubectl rollout status deployment/eks-app          
