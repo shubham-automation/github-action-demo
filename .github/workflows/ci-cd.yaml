@@ -74,7 +74,7 @@ jobs:
           kubectl rollout status deployment/eks-app
 
       - name: Deploy New Feature of the Application
-      if: ${{ github.event.inputs.operation == 'deploy_new_feature' }}
+        if: ${{ github.event.inputs.operation == 'deploy_new_feature' }}
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
@@ -89,54 +89,54 @@ jobs:
           kubectl apply -f k8s/service.yaml
           kubectl rollout status deployment/eks-app
 
-      # - name: Store Image Tag for Rollback
-      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: image-tags
-      #     path: previous_image_tag.txt
-      #     retention-days: 7
+      - name: Store Image Tag for Rollback
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tags
+          path: previous_image_tag.txt
+          retention-days: 7
 
-      # - name: 'Download artifact from latest build'
-      #   if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
-      #   uses: dawidd6/action-download-artifact@v6
-      #   with:
-      #     workflow: deploy_default_feature.yaml
-      #     name: image-tags
-      #     path: downloaded-artifact
+      - name: 'Download artifact from latest build'
+        if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: deploy_default_feature.yaml
+          name: image-tags
+          path: downloaded-artifact
 
-      # - name: Verify Artifact Download
-      #   if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
-      #   run: |
-      #     if [ -f "downloaded-artifact/previous_image_tag.txt" ]; then
-      #       echo "Artifact downloaded successfully. Contents:"
-      #       cat downloaded-artifact/previous_image_tag.txt
-      #     else
-      #       echo "Error: Artifact 'image-tags' not found or download failed"
-      #       echo "Possible causes:"
-      #       echo "- Deploy workflow failed to upload artifact"
-      #       echo "- Artifact expired (retention period: 7 days)"
-      #       echo "- Incompatible artifact version"
-      #       exit 1
-      #     fi
+      - name: Verify Artifact Download
+        if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
+        run: |
+          if [ -f "downloaded-artifact/previous_image_tag.txt" ]; then
+            echo "Artifact downloaded successfully. Contents:"
+            cat downloaded-artifact/previous_image_tag.txt
+          else
+            echo "Error: Artifact 'image-tags' not found or download failed"
+            echo "Possible causes:"
+            echo "- Deploy workflow failed to upload artifact"
+            echo "- Artifact expired (retention period: 7 days)"
+            echo "- Incompatible artifact version"
+            exit 1
+          fi
 
-      # - name: Rollback to Previous/Default Feature
-      #   if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      #     KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-      #   run: |
-      #     PREVIOUS_IMAGE_TAG=$(head -n 1 downloaded-artifact/previous_image_tag.txt)
-      #     if [ -z "$PREVIOUS_IMAGE_TAG" ]; then
-      #       echo "Error: No previous image tag found in previous_image_tag.txt"
-      #       exit 1
-      #     fi
-      #     mkdir -p ~/.kube
-      #     echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
-      #     sed -i "s|<ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>|$ECR_REGISTRY/$ECR_REPOSITORY:$PREVIOUS_IMAGE_TAG|g" k8s/deployment.yaml
-      #     # Disable feature toggle for rollback
-      #     sed -i 's/value: "true"/value: "false"/g' k8s/deployment.yaml
-      #     kubectl apply -f k8s/deployment.yaml
-      #     kubectl apply -f k8s/service.yaml
-      #     kubectl rollout status deployment/eks-app          
+      - name: Rollback to Previous/Default Feature
+        if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        run: |
+          PREVIOUS_IMAGE_TAG=$(head -n 1 downloaded-artifact/previous_image_tag.txt)
+          if [ -z "$PREVIOUS_IMAGE_TAG" ]; then
+            echo "Error: No previous image tag found in previous_image_tag.txt"
+            exit 1
+          fi
+          mkdir -p ~/.kube
+          echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
+          sed -i "s|<ECR_REGISTRY>/<ECR_REPOSITORY>:<IMAGE_TAG>|$ECR_REGISTRY/$ECR_REPOSITORY:$PREVIOUS_IMAGE_TAG|g" k8s/deployment.yaml
+          # Disable feature toggle for rollback
+          sed -i 's/value: "true"/value: "false"/g' k8s/deployment.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl rollout status deployment/eks-app          
