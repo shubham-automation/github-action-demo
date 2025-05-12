@@ -98,6 +98,22 @@ jobs:
           retention-days: 7
 
       - name: 'Download artifact from latest build'
+        if: ${{ github.event.inputs.operation == 'deploy_new_feature' }}
+        uses: dawidd6/action-download-artifact@v6
+        with:
+          workflow: ci-cd.yaml
+          name: image-tags
+          path: downloaded-artifact
+
+      - name: Store Image Tag to Pass on to Next Operation
+        if: ${{ github.event.inputs.operation == 'deploy_new_feature' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-tags
+          path: downloaded-artifact/previous_image_tag.txt
+          retention-days: 7
+
+      - name: 'Download artifact from latest build'
         if: ${{ github.event.inputs.operation == 'rollback_to_default_feature' }}
         uses: dawidd6/action-download-artifact@v6
         with:
