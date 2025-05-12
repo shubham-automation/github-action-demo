@@ -39,19 +39,19 @@ jobs:
         id: set-image-tag
         run: echo "IMAGE_TAG=$(echo $RANDOM)" >> $GITHUB_ENV
 
-      # - name: Build, Tag, and Push Image to Amazon ECR
-      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      #   run: |
-      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      #     # Create or update previous_image_tag.txt
-      #     #echo "PREVIOUS_IMAGE_TAG=$(cat previous_image_tag.txt 2>/dev/null || echo 'latest')" > previous_image_tag.txt
-      #     if [ "${{ github.event.inputs.operation }}" == "deploy_default_feature" ]; then
-      #       echo $IMAGE_TAG >> previous_image_tag.txt
-      #     fi
+      - name: Build, Tag, and Push Image to Amazon ECR
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          # Create or update previous_image_tag.txt
+          #echo "PREVIOUS_IMAGE_TAG=$(cat previous_image_tag.txt 2>/dev/null || echo 'latest')" > previous_image_tag.txt
+          if [ "${{ github.event.inputs.operation }}" == "deploy_default_feature" ]; then
+            echo $IMAGE_TAG >> previous_image_tag.txt
+          fi
 
       # - name: Debug Image Tag File
       #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
