@@ -13,6 +13,8 @@ spec:
       labels:
         app: aks-app
     spec:
+      imagePullSecrets:
+      - name: acr-secret    
       containers:
       - name: aks-app
         image: <ACR_REGISTRY>.azurecr.io/<ACR_REPOSITORY>:<IMAGE_TAG>

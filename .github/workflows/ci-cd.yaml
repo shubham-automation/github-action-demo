@@ -60,6 +60,11 @@ jobs:
         run: |
           az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --overwrite-existing
           sed -i "s|<ACR_REGISTRY>.azurecr.io/<ACR_REPOSITORY>:<IMAGE_TAG>|${{ secrets.ACR_REGISTRY }}.azurecr.io/$ACR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
+          ACR_PASSWORD=$(az acr credential show --name myfeatureapp | jq -r .'passwords[0].value')
+          kubectl create secret docker-registry acr-secret \
+            --docker-server=${{ secrets.ACR_REGISTRY }}.azurecr.io \
+            --docker-username=${{ secrets.ACR_REGISTRY }} \
+            --docker-password=$ACR_PASSWORD          
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl rollout status deployment/aks-app
@@ -72,7 +77,12 @@ jobs:
           az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --overwrite-existing
           sed -i "s|<ACR_REGISTRY>.azurecr.io/<ACR_REPOSITORY>:<IMAGE_TAG>|${{ secrets.ACR_REGISTRY }}.azurecr.io/$ACR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
           # Enable feature toggle for Customer B (set to true for new feature)
-          sed -i 's/value: "false"/value: "true"/g' k8s/deployment.yaml          
+          sed -i 's/value: "false"/value: "true"/g' k8s/deployment.yaml  
+          ACR_PASSWORD=$(az acr credential show --name myfeatureapp | jq -r .'passwords[0].value')
+          kubectl create secret docker-registry acr-secret \
+            --docker-server=${{ secrets.ACR_REGISTRY }}.azurecr.io \
+            --docker-username=${{ secrets.ACR_REGISTRY }} \
+            --docker-password=$ACR_PASSWORD                   
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl rollout status deployment/aks-app
@@ -137,7 +147,12 @@ jobs:
           az aks get-credentials --resource-group ${{ secrets.AZURE_RESOURCE_GROUP }} --name ${{ secrets.AKS_CLUSTER_NAME }} --overwrite-existing
           sed -i "s|<ACR_REGISTRY>.azurecr.io/<ACR_REPOSITORY>:<IMAGE_TAG>|${{ secrets.ACR_REGISTRY }}.azurecr.io/$ACR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
           # Disable feature toggle for rollback
-          sed -i 's/value: "true"/value: "false"/g' k8s/deployment.yaml          
+          sed -i 's/value: "true"/value: "false"/g' k8s/deployment.yaml   
+          ACR_PASSWORD=$(az acr credential show --name myfeatureapp | jq -r .'passwords[0].value')
+          kubectl create secret docker-registry acr-secret \
+            --docker-server=${{ secrets.ACR_REGISTRY }}.azurecr.io \
+            --docker-username=${{ secrets.ACR_REGISTRY }} \
+            --docker-password=$ACR_PASSWORD                  
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
           kubectl rollout status deployment/aks-app        
