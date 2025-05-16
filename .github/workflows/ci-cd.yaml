@@ -31,30 +31,42 @@ jobs:
         if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'rollback_to_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
         run: az acr login --name ${{ secrets.ACR_REGISTRY }}
 
-      # - name: Set Image Tag
-      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
-      #   id: set-image-tag
-      #   run: echo "IMAGE_TAG=$(echo $RANDOM)" >> $GITHUB_ENV
+      - name: Set Image Tag
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+        id: set-image-tag
+        run: echo "IMAGE_TAG=$(echo $RANDOM)" >> $GITHUB_ENV
 
-      # - name: Build, Tag, and Push Image to Amazon ECR
-      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
-      #   env:
-      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-      #     ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
-      #   run: |
-      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
-      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
-      #     # Create or update previous_image_tag.txt
-      #     #echo "PREVIOUS_IMAGE_TAG=$(cat previous_image_tag.txt 2>/dev/null || echo 'latest')" > previous_image_tag.txt
-      #     if [ "${{ github.event.inputs.operation }}" == "deploy_default_feature" ]; then
-      #       echo $IMAGE_TAG >> previous_image_tag.txt
-      #     fi
+      - name: Build, Tag, and Push Image to ACR
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
+        env:
+          ACR_REPOSITORY: aks-app
+        run: |
+          docker build -t ${{ secrets.ACR_REGISTRY }}.azurecr.io/$ACR_REPOSITORY:$IMAGE_TAG .
+          docker push ${{ secrets.ACR_REGISTRY }}.azurecr.io/$ACR_REPOSITORY:$IMAGE_TAG
+          if [ "${{ github.event.inputs.operation }}" == "deploy_default_feature" ]; then
+            echo $IMAGE_TAG >> previous_image_tag.txt
+          fi
 
-      # - name: Debug Image Tag File
-      #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
-      #   run: |
-      #     echo "Contents of previous_image_tag.txt:"
-      #     cat previous_image_tag.txt || echo "File not found"
+      - name: Debug Image Tag File
+        if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
+        run: |
+          echo "Contents of previous_image_tag.txt:"
+          cat previous_image_tag.txt || echo "File not found"
+
+      - name: Deploy to AKS
+        env:
+          ACR_REPOSITORY: aks-app
+          #KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+        run: |
+          az aks get-credentials --resource-group 1-edd98666-playground-sandbox --name test --overwrite-existing
+          # mkdir -p ~/.kube
+          # echo $KUBE_CONFIG_DATA | base64 -d > ~/.kube/config
+          # sed -i "s|<ACR_REGISTRY>.azurecr.io/<ACR_REPOSITORY>:<IMAGE_TAG>|${{ secrets.ACR_REGISTRY }}.azurecr.io/$ACR_REPOSITORY:$IMAGE_TAG|g" k8s/deployment.yaml
+          # # Enable feature toggle for Customer B (set to true for new feature)
+          # sed -i 's/value: "false"/value: "true"/g' k8s/deployment.yaml
+          # kubectl apply -f k8s/deployment.yaml
+          # kubectl apply -f k8s/service.yaml
+          # kubectl rollout status deployment/aks-app
 
       # - name: Deploy Default Feature of the Application
       #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' }}
