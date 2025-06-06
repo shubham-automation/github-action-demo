@@ -16,6 +16,8 @@ jobs:
       - run: sudo apt update -y
       - name: Run a one-line script
         run: echo scale test 1 finished!
+      - name: Sleep
+        run: sleep 4m
   scale-test2:
     runs-on: [self-hosted, org-runner]
     steps:
@@ -28,6 +30,8 @@ jobs:
       - run: sudo apt update -y
       - name: Run a one-line script
         run: echo scale test 2 finished!
+      - name: Sleep
+        run: sleep 4m
   scale-test3:
     runs-on: [self-hosted, org-runner]
     steps:
@@ -40,6 +44,8 @@ jobs:
       - run: sudo apt update -y
       - name: Run a one-line script
         run: echo scale test 3 finished!
+      - name: Sleep
+        run: sleep 4m
   scale-test4:
     runs-on: [self-hosted, org-runner]
     steps:
@@ -52,3 +58,5 @@ jobs:
       - run: sudo apt update -y
       - name: Run a one-line script
         run: echo scale test 4 finished!
+      - name: Sleep
+        run: sleep 4m
