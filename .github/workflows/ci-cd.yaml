@@ -1,15 +1,15 @@
 name: Deploy Application for Customers
 on:
   workflow_dispatch:
-    inputs:
-      operation:
-        description: 'Select the operation'
-        required: true
-        type: choice
-        options:
-          - deploy_default_feature
-          - rollback_to_default_feature
-          - deploy_new_feature
+    # inputs:
+    #   operation:
+    #     description: 'Select the operation'
+    #     required: true
+    #     type: choice
+    #     options:
+    #       - deploy_default_feature
+    #       - rollback_to_default_feature
+    #       - deploy_new_feature
 permissions: # permission to upload artifacts
   actions: write
   contents: read
@@ -28,6 +28,8 @@ jobs:
       - name: Output Run Attempt
         run: echo ${{ github.run_attempt }}
 
+      - name: Sleep for 900 seconds
+        run: sleep 900s
       # - name: Configure AWS Credentials
       #   if: ${{ github.event.inputs.operation == 'deploy_default_feature' || github.event.inputs.operation == 'rollback_to_default_feature' || github.event.inputs.operation == 'deploy_new_feature' }}
       #   uses: aws-actions/configure-aws-credentials@v4
