@@ -1,0 +1,20 @@
+name: myjob
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scale-test11:
+    runs-on: [self-hosted, org-runner]
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 1 finished!
+      - name: Sleep
+        run: sleep 4m
