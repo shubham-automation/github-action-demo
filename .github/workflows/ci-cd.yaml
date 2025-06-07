@@ -11,6 +11,7 @@ jobs:
       - uses: actions/setup-python@v5 
         with:
           python-version: '3.13'
+      - run: pip3 install pandas
       - run: pip3 freeze
       - name: Run a one-line script
         run: echo scale test 0 finished!
