@@ -7,10 +7,10 @@ jobs:
   scale-test0:
     runs-on: arc-org-runner-set
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-python@v5 
-        with:
-          python-version: '3.13'
+      # - uses: actions/checkout@v3
+      # - uses: actions/setup-python@v5 
+      #   with:
+      #     python-version: '3.13'
       - run: pip3 freeze
       - name: Run a one-line script
         run: echo scale test 0 finished!
