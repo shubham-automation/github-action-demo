@@ -39,6 +39,21 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa' && (startsWith(github.ref_name, 'rel/') || startsWith(github.ref_name, 'hotfix/'))
     environment: qa
     steps:
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}'
+
+      - name: Install kubectl
+        uses: azure/setup-kubectl@v4
+        with:
+          version: 'latest'
+    
+      - uses: Azure/aks-set-context@v4
+        with:
+          cluster-name: k8s
+          resource-group: k8s
+
       - name: Get short commit ID
         id: get_commit
         run: |
@@ -46,6 +61,7 @@ jobs:
           echo "SHORT_COMMIT_ID is : $SHORT_COMMIT_ID"
           echo "BRANCH NAME is: $GITHUB_REF"
           echo "REPO NAME is: $GITHUB_REPOSITORY"
+          kubectl get po -A
   # scale-test0:
   #   runs-on: arc-org-runner-set
   #   steps:
