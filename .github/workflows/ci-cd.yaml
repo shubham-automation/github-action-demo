@@ -1,8 +1,23 @@
 name: Scale test
 
-on:
-  workflow_dispatch:
+# on:
+#   workflow_dispatch:
 
+on:
+  push:
+    branches:
+      - develop
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Select environment to deploy to'
+        required: true
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - prod
+          
 jobs:
   build:
     runs-on: arc-org-runner-set
@@ -17,11 +32,18 @@ jobs:
 
       - name: Login to Azure Container Registry
         run: az acr login --name ${{ secrets.ACR_REGISTRY }}
-
-      # - uses: azure/docker-login@v2
-      #   with:
-      #     login-server: "${{ secrets.ACR_REGISTRY }}.azurecr.io"
-      #     username: ${{ secrets.ACR_REGISTRY }}
+        
+  deploy-qa:
+    runs-on: arc-org-runner-set
+    needs: build
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.environment == 'qa' && (startsWith(github.ref_name, 'rel/') || startsWith(github.ref_name, 'hotfix/'))
+    environment: qa
+    steps:
+      - name: Get short commit ID
+        id: get_commit
+        run: |
+          SHORT_COMMIT_ID=$(git rev-parse --short HEAD)
+          echo "SHORT_COMMIT_ID=$SHORT_COMMIT_ID" >> $GITHUB_ENV
   # scale-test0:
   #   runs-on: arc-org-runner-set
   #   steps:
