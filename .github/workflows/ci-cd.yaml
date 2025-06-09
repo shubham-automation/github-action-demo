@@ -55,9 +55,14 @@ jobs:
         run: |
           SHORT_COMMIT_ID=$GITHUB_SHA
           echo "SHORT_COMMIT_ID is : $SHORT_COMMIT_ID"
-          echo "BRANCH NAME is: $GITHUB_REF"
+          echo "BRANCH=${GITHUB_REF##*/}" >> $GITHUB_ENV
           echo "REPO NAME is: $GITHUB_REPOSITORY"
           kubectl get po -A
+
+      - name: Print Branch Name
+        id: print_branch
+        run: |
+          echo "@@@@@@@ : $BRANCH"
   # scale-test0:
   #   runs-on: arc-org-runner-set
   #   steps:
