@@ -68,11 +68,13 @@ jobs:
         id: get_dockerconfigjson
         run: |
           SECRET_JSON=$(kubectl create secret docker-registry acr-pull-secret \
-            --docker-server=azurecr.io \
-            --docker-username=user \
-            --docker-password=pass \
-            --namespace=dev
-            --dry-run=client -o json | jq -r '.data[".dockerconfigjson"]')
+               --docker-server=azurecr.io \
+               --docker-username=user \
+               --docker-password=pass \
+               --namespace=dev \
+               --dry-run=client \
+               -o json | jq -r '.data.".dockerconfigjson"')
+               
           echo "dockerconfigjson=$SECRET_JSON" >> $GITHUB_OUTPUT
 
       - name: Print docker config
