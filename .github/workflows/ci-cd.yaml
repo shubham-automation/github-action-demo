@@ -42,7 +42,7 @@ jobs:
       - name: Get short commit ID
         id: get_commit
         run: |
-          SHORT_COMMIT_ID=$(git rev-parse --short HEAD)
+          SHORT_COMMIT_ID=$GITHUB_SHA
           echo "SHORT_COMMIT_ID=$SHORT_COMMIT_ID" >> $GITHUB_ENV
   # scale-test0:
   #   runs-on: arc-org-runner-set
