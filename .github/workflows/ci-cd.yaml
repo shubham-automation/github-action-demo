@@ -64,15 +64,20 @@ jobs:
         run: |
           echo "@@@@@@@ : $BRANCH"
 
-      - name: Set imagePullSecret
-        uses: azure/k8s-create-secret@v4
-        with:
-          namespace: 'default'
-          secret-name: 'contoso'
-          container-registry-url: 'containerregistry.contoso.com'
-          container-registry-username: "USERNAME"
-          container-registry-password: "PASSWORD"
-        id: create-secret
+      - name: Generate ACR pull secret
+        id: get_dockerconfigjson
+        run: |
+          SECRET_JSON=$(kubectl create secret docker-registry acr-pull-secret \
+            --docker-server=azurecr.io \
+            --docker-username=user \
+            --docker-password=pass \
+            --namespace=dev
+            --dry-run=client -o json | jq -r '.data[".dockerconfigjson"]')
+          echo "dockerconfigjson=$SECRET_JSON" >> $GITHUB_OUTPUT
+
+      - name: Print docker config
+        run: |
+          echo "@@@@@@@ : ${{ steps.get_dockerconfigjson.outputs.dockerconfigjson }}"
            
   # scale-test0:
   #   runs-on: arc-org-runner-set
