@@ -45,6 +45,7 @@ jobs:
           SHORT_COMMIT_ID=$GITHUB_SHA
           echo "SHORT_COMMIT_ID is : $SHORT_COMMIT_ID"
           echo "BRANCH NAME is: $GITHUB_REF"
+          echo "REPO NAME is: $GITHUB_REPOSITORY"
   # scale-test0:
   #   runs-on: arc-org-runner-set
   #   steps:
