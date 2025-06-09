@@ -21,6 +21,7 @@ jobs:
       - uses: azure/docker-login@v2
         with:
           login-server: "${{ secrets.ACR_REGISTRY }}.azurecr.io"
+          username: ${{ secrets.ACR_REGISTRY }}
   # scale-test0:
   #   runs-on: arc-org-runner-set
   #   steps:
