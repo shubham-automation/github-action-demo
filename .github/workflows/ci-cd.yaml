@@ -22,16 +22,29 @@ jobs:
   build:
     runs-on: arc-org-runner-set
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Login to Azure
+      - name: Azure Login
         uses: azure/login@v2
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}'
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
-      - name: Login to Azure Container Registry
-        run: az acr login --name ${{ secrets.ACR_REGISTRY }}
+      # Step 2: Run Azure CLI commands (example)
+      - name: Run Azure CLI
+        run: |
+          az group show --name rg-RITM0119889-jonhall-kp-test
+          # Add your Azure CLI commands here
+          
+      # - name: Checkout Code
+      #   uses: actions/checkout@v4
+
+      # - name: Login to Azure
+      #   uses: azure/login@v2
+      #   with:
+      #     creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}'
+
+      # - name: Login to Azure Container Registry
+      #   run: az acr login --name ${{ secrets.ACR_REGISTRY }}
         
   deploy-qa:
     runs-on: arc-org-runner-set
