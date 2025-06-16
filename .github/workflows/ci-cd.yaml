@@ -4,6 +4,15 @@ on:
   workflow_dispatch:
           
 jobs:
+  increment-tag:
+    runs-on: arc-org-runner-set
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Get next version
+        run: echo "Deploying tag $GITHUB_REF"
+          
   scale-test0:
     runs-on: arc-org-runner-set
     steps:
