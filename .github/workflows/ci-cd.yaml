@@ -10,8 +10,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Get next version
-        run: echo "Deploying tag ${GITHUB_REF#refs/tags/v}"
+      - name: Get Short Commit ID
+        run: echo "Deploying tag ${GITHUB_SHA::7}"
           
   scale-test0:
     runs-on: arc-org-runner-set
