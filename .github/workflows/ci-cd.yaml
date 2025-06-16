@@ -6,6 +6,7 @@ on:
 jobs:
   increment-tag:
     runs-on: arc-org-runner-set
+    if: startsWith(github.ref, 'refs/tags/')
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
