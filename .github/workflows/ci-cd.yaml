@@ -1,74 +1,64 @@
-name: Scale test
+name: Scale Test
 
 on:
   workflow_dispatch:
           
-jobs:
-  increment-tag:
+jobs:     
+  scale-test0:
     runs-on: arc-org-runner-set
-    if: startsWith(github.ref, 'refs/tags/')
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Get BRANCH NAME
-        run: echo "Deploying tag ${{ github.ref_name }}"
-          
-  # scale-test0:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     # - uses: actions/checkout@v3
-  #     # - uses: actions/setup-python@v5 
-  #     #   with:
-  #     #     python-version: '3.13'
-  #     - run: pip3 freeze
-  #     - name: Run a one-line script
-  #       run: echo scale test 0 finished!
-  # scale-test1:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 1 finished!
-  # scale-test2:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 2 finished!
-  # scale-test3:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 3 finished!
-  # scale-test4:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 4 finished!
+      # - uses: actions/checkout@v3
+      # - uses: actions/setup-python@v5 
+      #   with:
+      #     python-version: '3.13'
+      - run: pip3 freeze
+      - name: Run a one-line script
+        run: echo scale test 0 finished!
+  scale-test1:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 1 finished!
+  scale-test2:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 2 finished!
+  scale-test3:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 3 finished!
+  scale-test4:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 4 finished!
