@@ -9,84 +9,84 @@ jobs:
   #   container: debian:stable-slim
   #   steps:
   #   - run: echo "🎉 This job uses runner scale set runners!"
-  az-test:
+  # az-test:
+  #   runs-on: arc-org-runner-set
+  #   steps:
+  #     - name: Login to Azure
+  #       uses: azure/login@v2
+  #       with:
+  #         creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}'
+
+  #     - name: Setup kubelogin
+  #       uses: azure/use-kubelogin@v1
+  #       with:
+  #         kubelogin-version: 'v0.2.8'
+
+  #     - uses: azure/aks-set-context@v4
+  #       with:
+  #          resource-group: ${{ secrets.K8S_RESOURCE_GROUP }}
+  #          cluster-name: ${{ secrets.K8S_CLUSTER_NAME }}
+  #          admin: 'false'
+  #          use-kubelogin: 'true'
+     
+  #     - name: Kubectl cmd
+  #       run: kubectl get po -A
+        
+  scale-test0:
     runs-on: arc-org-runner-set
     steps:
-      - name: Login to Azure
-        uses: azure/login@v2
+      # - uses: actions/checkout@v3
+      # - uses: actions/setup-python@v5 
+      #   with:
+      #     python-version: '3.13'
+      - run: pip3 freeze
+      - name: Run a one-line script
+        run: echo scale test 0 finished!
+  scale-test1:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}"}'
-
-      - name: Setup kubelogin
-        uses: azure/use-kubelogin@v1
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 1 finished!
+  scale-test2:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          kubelogin-version: 'v0.2.8'
-
-      - uses: azure/aks-set-context@v4
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 2 finished!
+  scale-test3:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-           resource-group: ${{ secrets.K8S_RESOURCE_GROUP }}
-           cluster-name: ${{ secrets.K8S_CLUSTER_NAME }}
-           admin: 'false'
-           use-kubelogin: 'true'
-     
-      - name: Kubectl cmd
-        run: kubectl get po -A
-        
-  # scale-test0:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     # - uses: actions/checkout@v3
-  #     # - uses: actions/setup-python@v5 
-  #     #   with:
-  #     #     python-version: '3.13'
-  #     - run: pip3 freeze
-  #     - name: Run a one-line script
-  #       run: echo scale test 0 finished!
-  # scale-test1:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 1 finished!
-  # scale-test2:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 2 finished!
-  # scale-test3:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 3 finished!
-  # scale-test4:
-  #   runs-on: arc-org-runner-set
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: actions/setup-node@v3
-  #       with:
-  #         node-version: '14'
-  #     - run: npm install -g bats
-  #     - run: bats -v
-  #     - run: sudo apt update -y
-  #     - name: Run a one-line script
-  #       run: echo scale test 4 finished!
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 3 finished!
+  scale-test4:
+    runs-on: arc-org-runner-set
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: '14'
+      - run: npm install -g bats
+      - run: bats -v
+      - run: sudo apt update -y
+      - name: Run a one-line script
+        run: echo scale test 4 finished!
