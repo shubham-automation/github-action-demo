@@ -9,7 +9,9 @@ jobs:
     environment: prod
     steps:
       - name: Access secret
-        run: echo "My secret is ${{ secrets.PASS }}"
+        run: echo "Secret (partial): ${MY_SECRET:0:7}****"
+        env:
+          MY_SECRET: ${{ secrets.PASS }}
       
   # Explore-GitHub-Actions:
   #   runs-on: arc-org-runner-set
