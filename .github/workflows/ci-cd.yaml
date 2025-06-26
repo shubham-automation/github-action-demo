@@ -8,8 +8,9 @@ jobs:
     runs-on: arc-org-runner-set
     environment: prod
     steps:
-      - name: Access secret
-        run: echo "Secret (partial): ${MY_SECRET:0:7}****"
+      - name: Print secret without masking
+        run: |
+          echo "Secret (partial): ${MY_SECRET:0:4}****"
         env:
           MY_SECRET: ${{ secrets.PASS }}
       
