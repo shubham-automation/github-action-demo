@@ -1,15 +1,15 @@
 name: Deploy Application for Customers
 on:
   workflow_dispatch:
-    inputs:
-      operation:
-        description: 'Select the operation'
-        required: true
-        type: choice
-        options:
-          - deploy_default_feature
-          - rollback_to_default_feature
-          - deploy_new_feature
+    # inputs:
+    #   operation:
+    #     description: 'Select the operation'
+    #     required: true
+    #     type: choice
+    #     options:
+    #       - deploy_default_feature
+    #       - rollback_to_default_feature
+    #       - deploy_new_feature
 permissions: # permission to upload artifacts
   actions: write
   contents: read
