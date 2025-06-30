@@ -1,7 +1,11 @@
 name: Deploy Application for Customers
 on:
   workflow_dispatch:
-    # inputs:
+    inputs:
+        deploy-env:
+          description: 'Target environment for deployment'
+          type: environment
+          required: true
     #   operation:
     #     description: 'Select the operation'
     #     required: true
@@ -10,6 +14,7 @@ on:
     #       - deploy_default_feature
     #       - rollback_to_default_feature
     #       - deploy_new_feature
+
 permissions: # permission to upload artifacts
   actions: write
   contents: read
